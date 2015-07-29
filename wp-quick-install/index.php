@@ -9,6 +9,44 @@ Licence: GPLv3
 Last Update: 08 jan 15
 */
 
+/******************* DEFAULT CONFIGURATION ***************************/
+
+$data = array();
+$data['directory'] = ''; /* Installation directory - root as default */
+$data['language'] = "de_DE";
+
+$data['db']['dbname']          = "demo";
+$data['db']['dbhost']          = "localhost";
+$data['db']['prefix']          = "wp_";
+$data['db']['uname']           = "root";
+$data['db']['pwd']             = "";
+$data['db']['default_content'] = 1; /* delete "Hello World" content */ 
+
+$data['admin']['user_login'] = "admin";
+$data['admin']['password']   = "admin";
+$data['admin']['email']      = "demo@example.com";
+
+$data['title'] = "New Projet"; 
+
+$data['seo'] = 0; /* SEO disabled */ 
+
+$data['activate_theme'] = ( is_file("themes.zip") ) ? 1 : 0; /* set to 1 if themes.zip is placed besides */
+$data['delete_default_themes'] = $data['activate_theme']; 	 /* delete default themes if custom theme is installed */
+
+$data['plugins'][] = "wordpress-seo";
+
+$data['activate_plugins'] = 0;
+
+/*
+$data['wp_config']['post_revisions']     = 0;
+$data['wp_config']['disallow_file_edit'] = 1;
+$data['wp_config']['autosave_interval']  = 7200;
+$data['wp_config']['debug']              = 1;
+$data['wp_config']['wpcom_api_key']      = "";
+*/
+
+/******************* END DEFAULT CONFIGURATION ***************************/
+
 @set_time_limit( 0 );
 
 define( 'WP_API_CORE'				, 'http://api.wordpress.org/core/version-check/1.7/?locale=' );
@@ -34,39 +72,7 @@ if ( ! is_dir( WPQI_CACHE_PLUGINS_PATH ) ) {
 }
 
 
-$data = array();
-$data['directory'] = ''; /* Installation directory - root as default */
-$data['language'] = "en_US";
 
-$data['db']['dbname']          = "demo";
-$data['db']['dbhost']          = "localhost";
-$data['db']['prefix']          = "wp_";
-$data['db']['uname']           = "root";
-$data['db']['pwd']             = "root";
-$data['db']['default_content'] = 1;
-
-$data['admin']['user_login'] = "admin";
-$data['admin']['password']   = "admin";
-$data['admin']['email']      = "demo@example.com";
-
-$data['title'] = "New Projet"; 
-
-$data['seo'] = 0; /* SEO disabled */ 
-
-$data['activate_theme'] = 0; 								/* set to 1 if themes.zip is placed besides */
-$data['delete_default_themes'] = $data['activate_theme']; 	/* delete default themes if custom theme is installed */
-
-$data['plugins'][] = "wordpress-seo";
-
-$data['activate_plugins'] = 0;
-
-/*
-$data['wp_config']['post_revisions']     = 0;
-$data['wp_config']['disallow_file_edit'] = 1;
-$data['wp_config']['autosave_interval']  = 7200;
-$data['wp_config']['debug']              = 1;
-$data['wp_config']['wpcom_api_key']      = "";
-*/
 
 // always use current directory
 $directory = "./"; 
@@ -649,27 +655,27 @@ else { ?>
 				<table class="form-table">
 					<tr>
 						<th scope="row"><label for="dbname"><?php echo _('Database name');?></label></th>
-						<td><input name="dbname" id="dbname" type="text" size="25" value="wordpress" class="required" /></td>
+						<td><input name="dbname" id="dbname" type="text" size="25" value="<?=$data['db']['dbname']?>" class="required" /></td>
 						<td><?php echo _( 'The name of the database you want to run WP in.' ); ?></td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="uname"><?php echo _( 'Database username' );?></label></th>
-						<td><input name="uname" id="uname" type="text" size="25" value="username" class="required" /></td>
+						<td><input name="uname" id="uname" type="text" size="25" value="<?=$data['db']['uname'];?>" class="required" /></td>
 						<td><?php echo _( 'Your MySQL username' ); ?></td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="pwd"><?php echo _('Password');?></label></th>
-						<td><input name="pwd" id="pwd" type="text" size="25" value="password" /></td>
+						<td><input name="pwd" id="pwd" type="text" size="25" value="<?=$data['db']['pwd']?>" /></td>
 						<td><?php echo _('&hellip;and your MySQL password.');?></td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="dbhost"><?php echo _( 'Database Host' ); ?></label></th>
-						<td><input name="dbhost" id="dbhost" type="text" size="25" value="localhost" class="required" /></td>
+						<td><input name="dbhost" id="dbhost" type="text" size="25" value="<?=$data['db']['dbhost'];?>" class="required" /></td>
 						<td><?php echo _( 'You should be able to get this info from your web host, if <code>localhost</code> does not work.' ); ?></td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="prefix"><?php echo _( 'Table Prefix' ); ?></label></th>
-						<td><input name="prefix" id="prefix" type="text" value="wp_" size="25" class="required" /></td>
+						<td><input name="prefix" id="prefix" type="text" value="<?=$data['db']['prefix'];?>" size="25" class="required" /></td>
 						<td><?php echo _( 'If you want to run multiple WordPress installations in a single database, change this.' ); ?></td>
 					</tr>
 					<tr>
@@ -695,7 +701,8 @@ else { ?>
 								$languages = json_decode( file_get_contents( 'http://api.wordpress.org/translations/core/1.0/?version=4.0' ) )->translations;
 
 								foreach ( $languages as $language ) {
-									echo '<option value="' . $language->language . '">' . $language->native_name . '</option>';
+									$selected = ($language->language == $data['language']) ? "selected" : '';
+ 									echo '<option value="' . $language->language . '" $selected>' . $language->native_name . '</option>';
 								}
 								?>
 							</select>
@@ -712,12 +719,12 @@ else { ?>
 					</tr>
 					<tr>
 						<th scope="row"><label for="weblog_title"><?php echo _('Site Title');?></label></th>
-						<td><input name="weblog_title" type="text" id="weblog_title" size="25" value="" class="required" /></td>
+						<td><input name="weblog_title" type="text" id="weblog_title" size="25" value="<?=$data['title'];?>" class="required" /></td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="user_login"><?php echo _('Username');?></label></th>
 						<td>
-							<input name="user_login" type="text" id="user_login" size="25" value="" class="required" />
+							<input name="user_login" type="text" id="user_login" size="25" value="<?=$data['admin']['user_login'];?>" class="required" />
 							<p><?php echo _('Usernames can have only alphanumeric characters, spaces, underscores, hyphens, periods and the @ symbol.');?></p>
 						</td>
 					</tr>
@@ -727,18 +734,18 @@ else { ?>
 							<p><?php echo _('A password will be automatically generated for you if you leave this blank.');?></p>
 						</th>
 						<td>
-							<input name="admin_password" type="password" id="admin_password" size="25" value="" />
+							<input name="admin_password" type="password" id="admin_password" size="25" value="<?=$data['admin']['password'];?>" />
 							<p><?php echo _('Hint: The password should be at least seven characters long. To make it stronger, use upper and lower case letters, numbers and symbols like ! " ? $ % ^ &amp; ).');?>.</p>
 						</td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="admin_email"><?php echo _('Your E-mail');?></label></th>
-						<td><input name="admin_email" type="text" id="admin_email" size="25" value="" class="required" />
+						<td><input name="admin_email" type="text" id="admin_email" size="25" value="<?=$data['admin']['email'];?>" class="required" />
 						<p><?php echo _('Double-check your email address before continuing.');?></p></td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="blog_public"><?php echo _('Privacy');?></label></th>
-						<td colspan="2"><label><input type="checkbox" id="blog_public" name="blog_public" value="1" checked="checked" /> <?php echo _('Allow search engines to index this site.');?></label></td>
+						<td colspan="2"><label><input type="checkbox" id="blog_public" name="blog_public" value="1" <?php if ($data['seo'] == 1) echo 'checked="checked"'; ?>/> <?php echo _('Allow search engines to index this site.');?></label></td>
 					</tr>
 				</table>
 
