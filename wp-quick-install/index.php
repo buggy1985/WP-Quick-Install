@@ -319,12 +319,9 @@ if ( isset( $_GET['action'] ) ) {
 
 				// We update the options with the right siteurl et homeurl value
 				$protocol = ! is_ssl() ? 'http' : 'https';
-                $get = basename( dirname( __FILE__ ) ) . '/index.php/wp-admin/install.php?action=install_wp';
-                $dir = str_replace( '../', '', $directory );
                 $link = $protocol . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                $url = str_replace( $get, $dir, $link );
-                $url = trim( $url, '/' );
-
+                $url = trim( dirname($link), '/' );
+			
 				update_option( 'siteurl', $url );
 				update_option( 'home', $url );
 
@@ -1228,7 +1225,7 @@ else { ?>
 					function install_wp() {
 						$response.html("<p>Database Installation in Progress...</p>");
 						$('.progress-bar').animate({width: "49.5%"});
-						$.post(window.location.href + '/wp-admin/install.php?action=install_wp', $('form').serialize(), function(data) {
+						$.post(window.location.href + '?action=install_wp', $('form').serialize(), function(data) {
 							install_theme();
 						});
 					}
@@ -1237,7 +1234,7 @@ else { ?>
 					function install_theme() {
 						$response.html("<p>Theme Installation in Progress...</p>");
 						$('.progress-bar').animate({width: "66%"});
-						$.post(window.location.href + '/wp-admin/install.php?action=install_theme', $('form').serialize(), function(data) {
+						$.post(window.location.href + '?action=install_theme', $('form').serialize(), function(data) {
 							install_plugins();
 						});
 					}
